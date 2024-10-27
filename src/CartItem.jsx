@@ -81,15 +81,9 @@ import React, { useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { removeItem, updateQuantity } from './CartSlice';
 import './CartItem.css';
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
 
 const CartItem = ({ onContinueShopping }) => {
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [showModal, setShowModal] = useState(false);
   const cart = useSelector((state) => state.cart.items);
   const dispatch = useDispatch();
 
@@ -128,6 +122,58 @@ const CartItem = ({ onContinueShopping }) => {
     return Number(item.cost.substring(1)) * item.quantity;
   };
 
+  // Simple Modal Component
+  const Modal = () => {
+    return (
+      <div style={{
+        display: showModal ? 'block' : 'none',
+        position: 'fixed',
+        top: '50%',
+        left: '50%',
+        transform: 'translate(-50%, -50%)',
+        backgroundColor: 'white',
+        padding: '20px',
+        zIndex: 1000,
+        border: '1px solid #ccc',
+        borderRadius: '8px',
+        boxShadow: '0 2px 10px rgba(0, 0, 0, 0.1)',
+        textAlign: 'center'
+      }}>
+        <h2 style={{ marginBottom: '15px' }}>Thank you for your consideration</h2>
+        <p style={{ marginBottom: '20px' }}>This service will be available soon.</p>
+        <button 
+          onClick={() => setShowModal(false)}
+          style={{
+            padding: '8px 16px',
+            backgroundColor: '#4CAF50',
+            color: 'white',
+            border: 'none',
+            borderRadius: '4px',
+            cursor: 'pointer'
+          }}
+        >
+          Close
+        </button>
+      </div>
+    );
+  };
+
+  // Optional overlay to dim the background
+  const Overlay = () => {
+    return (
+      <div style={{
+        display: showModal ? 'block' : 'none',
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        backgroundColor: 'rgba(0, 0, 0, 0.5)',
+        zIndex: 999
+      }} onClick={() => setShowModal(false)} />
+    );
+  };
+
   return (
     <div className="cart-container">
       <h2 style={{ color: 'black' }}>Total Plants: {cart.length}</h2>
@@ -154,21 +200,11 @@ const CartItem = ({ onContinueShopping }) => {
       <div className="continue_shopping_btn">
         <button className="get-started-button" onClick={handleContinueShopping}>Continue Shopping</button>
         <br />
-        <button className="get-started-button1" onClick={() => setIsModalOpen(true)}>Checkout</button>
+        <button className="get-started-button1" onClick={() => setShowModal(true)}>Checkout</button>
       </div>
 
-      <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
-        <DialogContent className="sm:max-w-md">
-          <DialogHeader>
-            <DialogTitle className="text-center text-xl font-semibold">
-              Thank you for your consideration
-            </DialogTitle>
-          </DialogHeader>
-          <div className="text-center py-4">
-            This service will be available soon.
-          </div>
-        </DialogContent>
-      </Dialog>
+      <Overlay />
+      <Modal />
     </div>
   );
 };
